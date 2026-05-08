@@ -24,6 +24,8 @@ Local child branches override matching `origin/*` child branches with the same n
 
 - add/add conflicts are auto-resolved with `--theirs`, meaning the later child branch version wins
 - after that auto-resolution step, the helper continues the cherry-pick with non-interactive editor settings so it does not block on `vim`
+- if the disposable smart-folder branch already has an in-progress cherry-pick, the helper aborts it before rebuilding from `origin/master`
+- the destroy step is limited to the named local smart-folder branch plus its local `SM-*` marker tags; child branches and unrelated branches are left alone
 - every other conflict type stops the rebuild for manual resolution
 
 ## Tagging

@@ -1,5 +1,10 @@
 Revision history for git
 
+0.03 2026-05-08
+  - auto-abort incomplete cherry-picks on the disposable smart-folder branch before rebuild
+  - keep rejecting incomplete cherry-picks on non-disposable branches
+  - bump the skill version metadata for the destroy-gate cleanup release
+
 0.02 2026-05-08
   - release the scrubbed STACK-based examples and tests without the old project codename
   - keep smart-folder conflict recovery non-interactive during cherry-pick continue

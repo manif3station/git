@@ -13,3 +13,4 @@ docker compose -f ~/projects/skills/docker-compose.testing.yml run --rm perl-tes
 
 - `prove -lr t`: pass
 - implementation coverage: `lib/Git/Smart/Folder.pm` reached `100.0` statement coverage and `100.0` subroutine coverage
+- disposable smart-folder cherry-pick cleanup was verified to auto-abort only the named local smart-folder branch rebuild path while keeping child branches intact

@@ -51,12 +51,6 @@ Example:
 dashboard skills install git@github.mf:manif3station/git.git
 ```
 
-## License
-
-`git` is released under the MIT License.
-
-See [LICENSE](LICENSE).
-
 ## CLI Usage
 
 Direct local development:
@@ -117,7 +111,9 @@ Normal case, run the shipped example wrapper:
 - if a child branch adds no commits beyond its base, it is skipped and its marker tag is refreshed at the current rebuilt `HEAD`
 - if a conflict is not an add/add conflict, the helper stops for manual resolution
 - if Git editor settings would normally open an editor during `cherry-pick --continue`, the helper suppresses that prompt so the auto-resolved path stays non-interactive
-- if a cherry-pick is already in progress, the helper refuses to start
+- if a cherry-pick is already in progress on the disposable smart-folder branch, the helper aborts that state and rebuilds from scratch
+- if a cherry-pick is already in progress on some other branch, the helper still refuses to take over that state
+- the rebuild deletes and recreates only the named local smart-folder branch; it does not delete child branches or unrelated branches
 
 ## Documentation
 
@@ -125,3 +121,9 @@ See:
 
 - `docs/overview.md`
 - `docs/usage.md`
+
+## License
+
+`git` is released under the MIT License.
+
+See [LICENSE](LICENSE).

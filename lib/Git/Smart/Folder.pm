@@ -36,11 +36,10 @@ sub main {
     _die_msg("Unknown subcommand '$subcommand'. Run: dashboard git.smart.folder --help")
         if $subcommand ne 'update';
 
-    _require_git_work_tree();
-    _require_no_incomplete_cherry_pick();
-    _require_clean_work_tree();
-
     my $smart_branch = resolve_smart_folder_name( $argv[0] );
+    _require_git_work_tree();
+    _handle_incomplete_cherry_pick($smart_branch);
+    _require_clean_work_tree();
 
     _bootstrap_git_ssh();
     _run_checked( 'git', 'fetch', '--all', '--prune' );
@@ -180,10 +179,18 @@ sub _require_git_work_tree {
     return 1;
 }
 
-sub _require_no_incomplete_cherry_pick {
-    _die_msg('An incomplete cherry-pick is already in progress. Resolve it before running git.smart.folder update.')
-        if _cherry_pick_in_progress();
-    return 1;
+sub _handle_incomplete_cherry_pick {
+    my ($smart_branch) = @_;
+    return 1 if !_cherry_pick_in_progress();
+
+    my ( $rc, $current_branch ) = _capture_first_line( 'git', 'symbolic-ref', '--quiet', '--short', 'HEAD' );
+    if ( $rc == 0 && $current_branch eq $smart_branch ) {
+        print "Aborting in-progress cherry-pick on disposable smart folder branch ${smart_branch}.\n";
+        _run_checked( 'git', 'cherry-pick', '--abort' );
+        return 1;
+    }
+
+    _die_msg('An incomplete cherry-pick is already in progress outside the disposable smart folder branch. Resolve it before running git.smart.folder update.');
 }
 
 sub _require_clean_work_tree {

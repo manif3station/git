@@ -174,22 +174,45 @@ subtest 'missing child branches fail clearly' => sub {
     is( $stdout, q{}, 'missing child branches failure does not print stdout' );
 };
 
-subtest 'incomplete cherry pick state is rejected before rebuild' => sub {
+subtest 'incomplete cherry pick state on the smart folder branch is auto-aborted before rebuild' => sub {
+    my $env = create_linear_stack_env();
+    my $work = $env->{work};
+
+    run_checked( [ 'git', 'checkout', 'STACK-11095' ], $work );
+    overwrite_file( File::Spec->catfile( $work, 'stack.txt' ), "temporary-local\n" );
+    run_checked( [ 'git', 'add', 'stack.txt' ], $work );
+    run_checked( [ 'git', 'commit', '-m', 'Create disposable smart-branch conflict seed' ], $work );
+    my $first_commit = capture_stdout( [ 'git', 'rev-list', '--reverse', 'origin/master..origin/STACK-11095-1' ], $work );
+    chomp $first_commit;
+    my $conflict_rc = system_in_dir( [ 'git', 'cherry-pick', $first_commit ], $work );
+    isnt( $conflict_rc, 0, 'fixture creates an in-progress cherry-pick on the disposable smart branch' );
+
+    my ( $stdout, $stderr, $exit ) = run_module_capture( [qw(update STACK-11095)], $work );
+    is( $exit, 0, 'smart-folder rebuild auto-aborts its own incomplete cherry-pick and succeeds' );
+    is( $stderr, q{}, 'auto-abort path does not print stderr' );
+    like( $stdout, qr/Aborting in-progress cherry-pick on disposable smart folder branch STACK-11095\./, 'auto-abort is reported clearly' );
+    like( $stdout, qr/Rebuilt STACK-11095 on top of origin\/master\./, 'rebuild continues after auto-abort' );
+
+    my $child_one_still_exists = system_in_dir( [ 'git', 'show-ref', '--verify', '--quiet', 'refs/heads/STACK-11095-1' ], $work );
+    my $child_two_still_exists = system_in_dir( [ 'git', 'show-ref', '--verify', '--quiet', 'refs/heads/STACK-11095-2' ], $work );
+    is( $child_one_still_exists, 0, 'child branch one is not deleted during smart-folder rebuild' );
+    is( $child_two_still_exists, 0, 'child branch two is not deleted during smart-folder rebuild' );
+};
+
+subtest 'incomplete cherry pick state on a non-disposable branch is still rejected' => sub {
     my $env = create_non_add_add_conflict_env();
     my $work = $env->{work};
 
-    run_checked( [ 'git', 'checkout', 'STACK-33000' ], $work );
+    run_checked( [ 'git', 'checkout', 'STACK-33000-2' ], $work );
     my $first_commit = capture_stdout( [ 'git', 'rev-list', '--reverse', 'origin/master..origin/STACK-33000-1' ], $work );
     chomp $first_commit;
-    run_checked( [ 'git', 'cherry-pick', $first_commit ], $work );
-    my $second_commit = capture_stdout( [ 'git', 'rev-list', '--reverse', 'origin/STACK-33000-1..origin/STACK-33000-2' ], $work );
-    chomp $second_commit;
-    system_in_dir( [ 'git', 'cherry-pick', $second_commit ], $work );
+    my $conflict_rc = system_in_dir( [ 'git', 'cherry-pick', $first_commit ], $work );
+    isnt( $conflict_rc, 0, 'fixture creates an in-progress cherry-pick on a non-disposable branch' );
 
     my ( $stdout, $stderr, $exit ) = run_module_capture( [qw(update STACK-33000)], $work );
-    is( $exit, 1, 'incomplete cherry-pick exits nonzero' );
-    like( $stderr, qr/incomplete cherry-pick is already in progress/, 'incomplete cherry-pick error is clear' );
-    is( $stdout, q{}, 'incomplete cherry-pick failure does not print stdout' );
+    is( $exit, 1, 'non-disposable branch cherry-pick still exits nonzero' );
+    like( $stderr, qr/incomplete cherry-pick is already in progress outside the disposable smart folder branch/, 'non-disposable branch error is clear' );
+    is( $stdout, q{}, 'non-disposable branch failure does not print stdout' );
 };
 
 subtest 'add add conflicts are auto resolved using the later child version' => sub {
