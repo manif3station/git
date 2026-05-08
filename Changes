@@ -1,5 +1,10 @@
 Revision history for git
 
+0.02 2026-05-08
+  - release the scrubbed STACK-based examples and tests without the old project codename
+  - keep smart-folder conflict recovery non-interactive during cherry-pick continue
+  - bump the skill version metadata for the completed release
+
 0.01 2026-05-08
   - add the first git.smart.folder nested CLI skill
   - add the MIT license gate for the git skill and the workspace skill rules
