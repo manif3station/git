@@ -1,0 +1,8 @@
+Revision history for git
+
+0.01 2026-05-08
+  - add the first git.smart.folder nested CLI skill
+  - add the MIT license gate for the git skill and the workspace skill rules
+  - add disposable Git repository tests for smart-folder rebuild flows
+  - replace project-specific branch examples with neutral STACK names
+  - add README, docs, tickets, and example usage script for the git skill
