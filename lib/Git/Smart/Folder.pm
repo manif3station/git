@@ -247,7 +247,11 @@ sub _system_quiet {
     my (@cmd) = @_;
     my $command = join q{ }, map { _shell_quote($_) } @cmd;
     my $devnull = File::Spec->devnull();
-    system 'sh', '-c', $command . ' >' . _shell_quote($devnull) . ' 2>' . _shell_quote($devnull);
+    my $prefix = q{};
+    if ( @cmd && $cmd[0] eq 'git' ) {
+        $prefix = "GIT_EDITOR=':' EDITOR=':' VISUAL=':' ";
+    }
+    system 'sh', '-c', $prefix . $command . ' >' . _shell_quote($devnull) . ' 2>' . _shell_quote($devnull);
     return $? >> 8;
 }
 

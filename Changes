@@ -5,4 +5,5 @@ Revision history for git
   - add the MIT license gate for the git skill and the workspace skill rules
   - add disposable Git repository tests for smart-folder rebuild flows
   - replace project-specific branch examples with neutral STACK names
+  - keep smart-folder cherry-pick conflict recovery non-interactive when editor settings would otherwise block update
   - add README, docs, tickets, and example usage script for the git skill

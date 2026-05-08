@@ -196,7 +196,15 @@ subtest 'add add conflicts are auto resolved using the later child version' => s
     my $env = create_add_add_conflict_env();
     my $work = $env->{work};
 
-    my ( $stdout, $stderr, $exit ) = run_module_capture( [qw(update STACK-44000)], $work );
+    my ( $stdout, $stderr, $exit ) = run_module_capture(
+        [qw(update STACK-44000)],
+        $work,
+        {
+            GIT_EDITOR => 'false',
+            EDITOR     => 'false',
+            VISUAL     => 'false',
+        },
+    );
     is( $exit, 0, 'add/add conflict stack rebuild succeeds' );
     is( $stderr, q{}, 'add/add conflict stack rebuild does not print stderr' );
     like( $stdout, qr/Resolving add\/add conflict in conflict.txt by taking the later child branch version\./, 'add/add resolution is reported' );

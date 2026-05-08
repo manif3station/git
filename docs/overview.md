@@ -23,6 +23,7 @@ Local child branches override matching `origin/*` child branches with the same n
 ## Conflict Rules
 
 - add/add conflicts are auto-resolved with `--theirs`, meaning the later child branch version wins
+- after that auto-resolution step, the helper continues the cherry-pick with non-interactive editor settings so it does not block on `vim`
 - every other conflict type stops the rebuild for manual resolution
 
 ## Tagging

@@ -16,6 +16,8 @@ When stacked ticket work is split across branches such as `STACK-11095-1`, `STAC
 
 The skill exposes `dashboard git.smart.folder update [SMART_FOLDER_BRANCH]`. The helper validates the repository state, resolves the umbrella branch name, fetches remote refs, discovers matching local and remote child branches, recreates the umbrella branch from `origin/master`, cherry-picks the child ranges in numeric order, auto-resolves add/add conflicts by taking the later child version, refreshes local `SM-*` tags, and prints a clear no-push completion message.
 
+When the helper has to continue after an auto-resolved add/add conflict, it forces a non-interactive Git editor setting so `update` does not stall behind `vim` or another editor prompt.
+
 ## Developer Dashboard Feature Added
 
 This skill adds:
@@ -114,6 +116,7 @@ Normal case, run the shipped example wrapper:
 - if no matching child branches exist, the rebuild fails clearly
 - if a child branch adds no commits beyond its base, it is skipped and its marker tag is refreshed at the current rebuilt `HEAD`
 - if a conflict is not an add/add conflict, the helper stops for manual resolution
+- if Git editor settings would normally open an editor during `cherry-pick --continue`, the helper suppresses that prompt so the auto-resolved path stays non-interactive
 - if a cherry-pick is already in progress, the helper refuses to start
 
 ## Documentation
