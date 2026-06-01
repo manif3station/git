@@ -39,16 +39,10 @@ This skill adds:
 
 ## Installation
 
-Install the skill through Developer Dashboard from a git repository:
+Install the skill into Developer Dashboard by repo name:
 
 ```bash
-dashboard skills install <git-url-to-git-skill>
-```
-
-Example:
-
-```bash
-dashboard skills install git@github.mf:manif3station/git.git
+dashboard skills install git
 ```
 
 ## CLI Usage
